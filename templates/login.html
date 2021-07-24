@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{%block title%} LogIn {% endblock %}
+
+{% block content %}
+        
+<div class="container mt-3">
+    <div class="row">
+        <!--to get form to center-->
+        <div class="col-md-4"></div>
+        
+        <div class="col-md-4">
+            <h4 class="text-center">Login</h4>
+            <br>
+            <form>
+                <div class="md-3">
+                    <label for="email" class="form-label">email</label>
+                    <input type="email" class="form-control" id="email" aria-describedby="" required>
+                </div>
+                <div class="md-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-md mt-4">Login</button>
+            </form>
+            <div class="border-top pt-3 mt-3">
+                <small class="text-muted">
+                    Don't have an account? <a href="/signin" class="ml-2">SignIn</a>
+                </small>
+            </div>
+        </div>
+
+        <div class="col-mdd-4"></div>
+    </div>
+</div>
+
+{% endblock %}
