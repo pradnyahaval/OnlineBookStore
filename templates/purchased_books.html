@@ -2,7 +2,29 @@
 {%block title%} Purchased books {% endblock %}
 
 {% block content %}
-        
 
+<p>{{ current_user.message }}</p>
+
+
+<table class="table mt-3">
+    <thead>
+      <tr>
+        <th scope="col">Book Name</th>
+        <th scope="col">Price</th>
+        <th scope="col">Date</th>
+      </tr>
+    </thead>
+    {% for book in purchased_books %}
+        <tbody>
+        <tr>
+            <td>{{ book.bookName }}</td>
+            <td>{{ book.bookPrice }}</td>
+            <td>{{ book.date }}</td>
+        </tr>
+        </tbody>    
+    {% endfor %}
+</table>
+</form>
+  
 
 {% endblock %}
