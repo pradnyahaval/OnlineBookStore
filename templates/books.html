@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{%block title%} Home {% endblock %}
+
+{% block content %}
+<form action="/books" class="form-inline mx-sm-3 mb-2 mt-3">
+    <div class="form-group ">
+        <button type="submit" class="btn btn-primary btn-md mr-sm-2">Want to buy?</button>
+        <button type="submit" class="btn btn-primary btn-md mr-sm-2" onclick="">conform</button>
+    </div>
+
+
+<table class="table mt-3">
+    <thead>
+      <tr>
+        <th scope="col">Book Name</th>
+        <th scope="col">Auther</th>
+        <th scope="col">Category</th>
+        <th scope="col">Price</th>
+        <th scope="col">Copies</th>
+        <th scope="col">Select</th>
+      </tr>
+    </thead>
+    {% for book in books %}
+        <tbody>
+        <tr>
+            <td>{{ book.bookName }}</td>
+            <td>{{ book.bookAuther }}</td>
+            <td>{{ book.bookCategory }}</td>
+            <td>{{ book.bookPrice }}</td>
+            <td>{{ book.bookCount }}</td>
+            <td><input type="checkbox" name="selected_books" aria-label="Checkbox for following text input" float="left"></td>
+        </tr>
+        </tbody>    
+    {% endfor %}
+</table>
+</form>
+  
+
+{% endblock %}
