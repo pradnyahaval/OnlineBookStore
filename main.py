@@ -8,6 +8,9 @@ from flask import request, redirect, url_for
 from flask.helpers import flash
 from werkzeug.security import generate_password_hash, check_password_hash #for password security
 from flask_login import UserMixin, login_user, logout_user, login_manager, LoginManager, login_required, current_user
+from datetime import datetime
+
+date = datetime.now()
 
 
 #to connect to server for db 
@@ -59,6 +62,15 @@ class Books(db.Model):
     bookCategory = db.Column(db.String(100), unique=True, nullable=False)
     bookPrice = db.Column(db.Float, nullable=False)
     bookCount = db.Column(db.Integer, nullable=False)
+
+class Pending_balance(db.Model):
+    pid = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    balance =  db.Column(db.Float, nullable=False)
+    bank_ref_no =  db.Column(db.Integer, nullable=False)
+    date = db.Column(db.String(50), nullable=False)
+
 
 
 #functions of each page
@@ -158,10 +170,8 @@ def purchased_books():
     query = db.engine.execute(f"SELECT * FROM `purchased_books` WHERE email='{user_email}'")
     if query:
         return render_template('purchased_books.html', purchased_books=query)
-    else:    
-        print("Empty")
-        msg = "You have not purchased any book."
-        return render_template('purchased_book.html', message=msg)
+    
+    return render_template('purchased_book.html')
 
 #user balance
 @app.route('/user_balance')
@@ -169,9 +179,16 @@ def purchased_books():
 def user_balance():
     return render_template('user_balance.html')
 
-@app.route('/pending_balance')
+#pending_balance
+@app.route('/pending_balance', methods=['GET', 'POST'])
 def pending_balance():
-    return render_template('user_balance.html')
+    user_balance = current_user.balance
+    if request.method == 'POST':
+        new_balance = request.form.get('new_balance')
+        bank_ref_no = request.form.get('bank_ref_no')
+        update_balance = db.engine.execute(f"INSERT INTO `pending_request` (`username`, `email`, `balance`, `bank_ref_no`, `date`) VALUES ('{current_user.username}', '{current_user.email}', '{new_balance}', '{bank_ref_no}', '{str(date)}')")
+        flash(f"Your balance will be updated shortly.", category="success")
+    return render_template('user_balance.html', user_balance=user_balance)
 
 if __name__ == '__main__':
     app.run(debug=True)
