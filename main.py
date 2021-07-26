@@ -45,13 +45,20 @@ class User(UserMixin ,db.Model):
     def id(self):
         return self.userid  
 
+class Purchased_books(db.Model):
+    purchased_id = db.Column(db.Integer, primary_key=True)
+    book_name = db.Column(db.String(100), nullable=False)
+    bookPrice = db.Column(db.Float, nullable=False)
+    email = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.String(50), nullable=False)
+
 class Books(db.Model):
     bookId = db.Column(db.Integer, primary_key=True)
     bookName = db.Column(db.String(100), nullable=False)
     bookAuther = db.Column(db.String(100), nullable=False)
     bookCategory = db.Column(db.String(100), unique=True, nullable=False)
     bookPrice = db.Column(db.Float, nullable=False)
-    bookPresent = db.Column(db.String(3), nullable=False)
+    bookCount = db.Column(db.Integer, nullable=False)
 
 
 #functions of each page
@@ -66,11 +73,8 @@ def base():
 
 @app.route('/home')
 def home():
-    if not User.is_authenticated:
-        return render_template('login.html')
-    else:
-        return render_template('home.html', username=current_user.username)
     return render_template('home.html')
+
 
 #login
 @app.route('/login', methods=['POST', 'GET'])
@@ -84,7 +88,7 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user)
             flash(f"Logged in successfully!", category="success")
-            return redirect(url_for('home'))
+            return redirect(url_for('books'))
         else:
             flash(f"email or password is invalid!", category="danger")
             return render_template('login.html')
@@ -109,11 +113,11 @@ def signin():
         
         if user:
             print("email already exits!")
-            flash(f"email already exists!", category="warning") # f for string
+            flash(f"email already exists!", category="danger") # f for string
             return render_template('login.html')
         if check_phone:
             print("phone number already exists!")
-            flash(f"phone number already exists!", category="warning")
+            flash(f"phone number already exists!", category="danger")
             return render_template('login.html')
 
         hashed_password = generate_password_hash(password)
@@ -132,10 +136,42 @@ def logout():
     flash(f"You are logged out.", category="success")
     return redirect(url_for('login'))
 
+#books list
+@app.route('/books', methods=['GET', 'POST'])
+@login_required
+def books():
+    if not User.is_authenticated:
+        return render_template('login.html')
+    else:
+        query = db.engine.execute(f"SELECT * FROM `books`")
+        return render_template('books.html', books=query)
+        """if request.method == 'POST':
+            flash(f"Books have been purchased!", category="success")            
+        return render_template('purchased_books.html')"""
+    #return render_template('home.html')
+
 #purchased books
 @app.route('/purchased_books')
+@login_required
 def purchased_books():
-    return render_template('purchased_books.html')
+    user_email = current_user.email
+    query = db.engine.execute(f"SELECT * FROM `purchased_books` WHERE email='{user_email}'")
+    if query:
+        return render_template('purchased_books.html', purchased_books=query)
+    else:    
+        print("Empty")
+        msg = "You have not purchased any book."
+        return render_template('purchased_book.html', message=msg)
+
+#user balance
+@app.route('/user_balance')
+@login_required
+def user_balance():
+    return render_template('user_balance.html')
+
+@app.route('/pending_balance')
+def pending_balance():
+    return render_template('user_balance.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
