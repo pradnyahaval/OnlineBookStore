@@ -190,5 +190,12 @@ def pending_balance():
         flash(f"Your balance will be updated shortly.", category="success")
     return render_template('user_balance.html', user_balance=user_balance)
 
+#profile
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
