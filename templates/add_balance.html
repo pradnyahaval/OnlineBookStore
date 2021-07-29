@@ -1,0 +1,37 @@
+<!--for admin-->
+
+{% extends "base.html" %}
+{%block title%} Home {% endblock %}
+
+{% block content %}
+        
+<form action="/" class="form-inline mx-sm-3 mb-2 mt-3">
+    <h3>Conform Pending Balance</h3>
+    <table class="table mt-3">
+        <thead>
+        <tr>
+            <th scope="col">User name</th>
+            <th scope="col">Email</th>
+            <th scope="col">updation of</th>
+            <th scope="col">Bank ref no</th>
+            <th scope>Date</th>
+            <th scope="col">click to conform</th>
+        </tr>
+        </thead>
+        {% for row in pending_balance %}
+            <tbody>
+            <tr>
+                <td>{{ row.username }}</td>
+                <td>{{ row.email }}</td>
+                <td>{{ row.balance }}</td>
+                <td>{{ row.bank_ref_no }}</td>
+                <td>{{ row.date }}</td>
+                <td><button>Pending</button></td>
+            </tr>
+            </tbody>    
+        {% endfor %}
+    </table>
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,40 @@
+<!--for admin-->
+{% extends "base.html" %}
+{%block title%} Home {% endblock %}
+
+{% block content %}
+        
+<form action="/add_books" method="POST">
+    <h3>Add new books</h3>
+    <div class="form-group">
+        <label for="bookname">Book Name</label>
+        <input type="text" class="form-control" id="bookname" name="bookname">        
+    </div>
+    <div class="form-group">
+        <label for="auther">Auther</label>
+        <input type="text" class="form-control" id="auther" name="auther">        
+    </div>
+    <div>
+        <label for="category">Category</label>
+        <select id="category" name=category class="form-control form-control-lg">
+            <option value="none">None</option>
+            <option value="Fiction">Fiction</option>
+            <option value="Horror">Horror</option>
+            <option value="adventure">Adventure</option>
+            <option value="scifi">SciFi</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="text" class="form-control" id="price" name="price">        
+    </div>
+    <div class="form-group">
+        <label for="copies">Copies</label>
+        <input type="number" class="form-control" id="copies" name="copies">        
+    </div>
+      
+      <button type="submit" class="btn btn-primary">Add</button>
+</form>
+
+
+{% endblock %}
