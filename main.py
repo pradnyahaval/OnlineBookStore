@@ -3,7 +3,7 @@ from operator import add
 from flask import Flask
 from flask.wrappers import Request
 from flask_sqlalchemy import SQLAlchemy
-from flask.templating import render_template
+from flask.templating import render_template, render_template_string
 from flask import request, redirect, url_for
 from flask.helpers import flash
 from werkzeug.security import generate_password_hash, check_password_hash #for password security
@@ -11,7 +11,6 @@ from flask_login import UserMixin, login_user, logout_user, login_manager, Login
 from datetime import datetime
 
 date = datetime.now()
-
 
 #to connect to server for db 
 local_server = True
@@ -22,7 +21,6 @@ app.secret_key = 'pradnya_haval'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/onlinebookstore'
 db = SQLAlchemy(app)
 
-
 #for user access
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -30,7 +28,6 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 
 #db models
@@ -72,7 +69,6 @@ class Pending_balance(db.Model):
     date = db.Column(db.String(50), nullable=False)
 
 
-
 #functions of each page
 @app.route('/')
 def base():
@@ -86,7 +82,6 @@ def base():
 @app.route('/home')
 def home():
     return render_template('home.html')
-
 
 #login
 @app.route('/login', methods=['POST', 'GET'])
@@ -104,8 +99,7 @@ def login():
         else:
             flash(f"email or password is invalid!", category="danger")
             return render_template('login.html')
- 
-
+        
     return render_template('login.html')
 
 #signin
@@ -121,7 +115,6 @@ def signin():
         
         user = User.query.filter_by(email=email).first() #to check if email already present
         check_phone = User.query.filter_by(phone=phone).first()
-        print(user, check_phone)
         
         if user:
             print("email already exits!")
@@ -162,6 +155,21 @@ def books():
         return render_template('purchased_books.html')"""
     #return render_template('home.html')
 
+#add new books => for admin
+@app.route('/add_books', methods=['GET', 'POST'])
+@login_required
+def add_books():
+    if request.method == 'POST':
+        bookname= request.form.get("bookname")
+        auther = request.form.get("auther")
+        category = request.form.get ("category")
+        price = request.form.get("price")
+        copies = request.form.get("copies")
+        new_book = db.engine.execute(f"INSERT INTO `books` (`bookName`, `bookAuther`, `bookCategory`, `bookPrice`, `bookCount`) VALUES ('{bookname}', '{auther}', '{category}', '{price}', '{copies}')")
+        flash(f"book details are added.", category="success")
+        return render_template('add_books.html')
+    return render_template('add_books.html')
+
 #purchased books
 @app.route('/purchased_books')
 @login_required
@@ -173,11 +181,18 @@ def purchased_books():
     
     return render_template('purchased_book.html')
 
-#user balance
+#user balance => for user
 @app.route('/user_balance')
 @login_required
 def user_balance():
     return render_template('user_balance.html')
+
+#add balance =>for admin
+@app.route('/add_balance')
+@login_required
+def add_balance():
+    pending_balance = db.engine.execute(f"SELECT * FROM `pending_request`")
+    return render_template('add_balance.html', pending_balance=pending_balance)
 
 #pending_balance
 @app.route('/pending_balance', methods=['GET', 'POST'])
@@ -186,6 +201,7 @@ def pending_balance():
     if request.method == 'POST':
         new_balance = request.form.get('new_balance')
         bank_ref_no = request.form.get('bank_ref_no')
+       
         update_balance = db.engine.execute(f"INSERT INTO `pending_request` (`username`, `email`, `balance`, `bank_ref_no`, `date`) VALUES ('{current_user.username}', '{current_user.email}', '{new_balance}', '{bank_ref_no}', '{str(date)}')")
         flash(f"Your balance will be updated shortly.", category="success")
     return render_template('user_balance.html', user_balance=user_balance)
